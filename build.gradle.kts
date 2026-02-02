@@ -1,22 +1,73 @@
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "1.9.22"
+    id("com.google.protobuf") version "0.9.4"
+    `maven-publish`
 }
 
-group = "org.ktor_lecture"
-version = "1.0-SNAPSHOT"
+group = "com.concert"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    api("com.google.protobuf:protobuf-kotlin:3.24.0")
+    api("io.grpc:grpc-kotlin-stub:1.4.0")
+    api("io.grpc:grpc-protobuf:1.59.0")
+    api("com.google.protobuf:protobuf-java-util:3.24.0")
 }
 
-kotlin {
-    jvmToolchain(17)
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.24.0"
+    }
+    plugins {
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
+        }
+        create("grpckt") {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.0:jdk8@jar"
+        }
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.plugins {
+                create("grpc")
+                create("grpckt")
+            }
+            task.builtins {
+                create("kotlin")
+            }
+        }
+    }
 }
 
-tasks.test {
-    useJUnitPlatform()
+publishing {
+    publications {
+        create<MavenPublication>("gpr") {
+            groupId = "com.concert"
+            artifactId = "concert-proto"
+            version = version
+
+            from(components["java"])
+        }
+    }
+    repositories {
+        mavenCentral()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ByeonJuHwan/concert-proto")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
 }
