@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.concert"
-version = "1.0.2"  // 버전 올리기
+version = "1.0.0"
 
 repositories {
     mavenCentral()
