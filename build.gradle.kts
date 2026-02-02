@@ -61,6 +61,10 @@ tasks.named("compileKotlin") {
     dependsOn("generateProto")
 }
 
+tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 publishing {
     publications {
         create<MavenPublication>("gpr") {
