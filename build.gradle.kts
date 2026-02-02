@@ -73,8 +73,6 @@ publishing {
             version = version
 
             from(components["java"])
-
-            artifact(tasks.named("jar"))
         }
     }
     repositories {
@@ -93,5 +91,5 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
-    withJavadocJar()  // ✅ 추가
+    withJavadocJar()
 }
