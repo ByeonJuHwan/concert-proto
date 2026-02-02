@@ -2,10 +2,11 @@ plugins {
     kotlin("jvm") version "1.9.22"
     id("com.google.protobuf") version "0.9.4"
     `maven-publish`
+    `java-library`
 }
 
 group = "com.concert"
-version = "1.0.0"
+version = "1.0.2"  // 버전 올리기
 
 repositories {
     mavenCentral()
@@ -43,6 +44,23 @@ protobuf {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs(
+                "build/generated/source/proto/main/java",
+                "build/generated/source/proto/main/kotlin",
+                "build/generated/source/proto/main/grpc",
+                "build/generated/source/proto/main/grpckt"
+            )
+        }
+    }
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("generateProto")
+}
+
 publishing {
     publications {
         create<MavenPublication>("gpr") {
@@ -51,6 +69,8 @@ publishing {
             version = version
 
             from(components["java"])
+
+            artifact(tasks.named("jar"))
         }
     }
     repositories {
@@ -58,8 +78,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/ByeonJuHwan/concert-proto")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
@@ -69,4 +89,5 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
+    withJavadocJar()  // ✅ 추가
 }

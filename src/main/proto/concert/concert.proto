@@ -1,7 +1,6 @@
 syntax = "proto3";
 
-option java_package = "com.concert.concert.grpc";
-
+option java_package = "com.proto.concert";
 option java_multiple_files = true;
 
 package concert.concert;
