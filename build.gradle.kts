@@ -54,7 +54,6 @@ publishing {
         }
     }
     repositories {
-        mavenCentral()
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/ByeonJuHwan/concert-proto")
